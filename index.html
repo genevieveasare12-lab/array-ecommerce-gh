@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArrayStore - E-Commerce App Powered by JavaScript Arrays</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white text-indigo-700 p-2 rounded-lg font-bold text-xl flex items-center justify-center w-10 h-10 shadow">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">ArrayStore GH</h1>
+                    <p class="text-xs text-indigo-200">Demonstrating Real-World Array Operations</p>
+                </div>
+            </div>
+            
+            <!-- Search & Controls -->
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <div class="relative flex-1 md:w-64">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="Search products..." 
+                        class="w-full pl-10 pr-4 py-2 rounded-lg bg-indigo-800 text-white placeholder-indigo-300 text-sm focus:outline-none focus:ring-2 focus:ring-white">
+                </div>
+                <button id="cartBtn" class="relative bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition shadow">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>Cart</span>
+                    <span id="cartCountBadge" class="absolute -top-2 -right-2 bg-amber-500 text-slate-900 font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left 2 Columns: Catalog & Educational Panel -->
+        <div class="lg:col-span-2 space-y-8">
+            
+            <!-- Educational Context Banner -->
+            <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-indigo-600"></i> Why Arrays Power E-Commerce
+                </h2>
+                <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                    In a real-world web store, product lists and user carts are managed using <strong>JavaScript Arrays</strong>. 
+                    The catalog below is an array of objects rendered dynamically via <code class="bg-slate-100 text-indigo-600 px-1.5 py-0.5 rounded font-mono text-xs">.map()</code>, 
+                    filtered with <code class="bg-slate-100 text-indigo-600 px-1.5 py-0.5 rounded font-mono text-xs">.filter()</code>, and checked out using <code class="bg-slate-100 text-indigo-600 px-1.5 py-0.5 rounded font-mono text-xs">.reduce()</code>.
+                </p>
+                <!-- Category Filter Buttons -->
+                <div id="categoryContainer" class="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+                    <!-- Injected dynamically -->
+                </div>
+            </section>
+
+            <!-- Product Grid Section -->
+            <section>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg text-slate-800">Product Catalog (GH¢)</h3>
+                    <span id="productCount" class="text-xs text-slate-500 font-medium">Showing all items</span>
+                </div>
+                <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <!-- Products injected dynamically via JS array rendering -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Column: Shopping Cart & Live Array State Inspector -->
+        <div class="space-y-6">
+            
+            <!-- Cart Box -->
+            <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 sticky top-24">
+                <div class="flex justify-between items-center pb-4 border-b border-slate-100">
+                    <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-bag-shopping text-indigo-600"></i> Shopping Cart
+                    </h3>
+                    <button id="clearCartBtn" class="text-xs text-rose-500 hover:underline font-medium hidden">Clear Cart</button>
+                </div>
+
+                <!-- Cart Items List -->
+                <div id="cartItemsList" class="divide-y divide-slate-100 max-h-72 overflow-y-auto my-4 pr-1">
+                    <div class="py-8 text-center text-slate-400 text-sm">
+                        <i class="fa-solid fa-cart-arrow-down text-3xl mb-2 block text-slate-300"></i>
+                        Your cart is empty. Add items to test array states!
+                    </div>
+                </div>
+
+                <!-- Cart Summary & Checkout -->
+                <div id="cartSummary" class="border-t border-slate-100 pt-4 space-y-3 hidden">
+                    <div class="flex justify-between text-sm text-slate-600">
+                        <span>Subtotal</span>
+                        <span id="cartSubtotal" class="font-semibold text-slate-800">GH¢ 0.00</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-slate-600">
+                        <span>Estimated Tax & Delivery</span>
+                        <span class="font-semibold text-slate-800">GH¢ 25.00</span>
+                    </div>
+                    <div class="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-dashed border-slate-200">
+                        <span>Total</span>
+                        <span id="cartTotal" class="text-indigo-600">GH¢ 0.00</span>
+                    </div>
+                    <button onclick="checkout()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition shadow-md hover:shadow flex items-center justify-center gap-2 mt-2">
+                        <i class="fa-solid fa-lock text-xs"></i> Proceed to Checkout
+                    </button>
+                </div>
+            </section>
+
+            <!-- Live Array Code Inspector -->
+            <section class="bg-slate-900 text-slate-200 p-5 rounded-2xl shadow-sm text-xs font-mono">
+                <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-800">
+                    <span class="text-indigo-400 font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-terminal"></i> Live Array State Inspector
+                    </span>
+                    <span class="bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[10px]" id="cartArrayLength">cart.length = 0</span>
+                </div>
+                <pre id="arrayInspectorCode" class="overflow-x-auto text-emerald-400 leading-relaxed bg-slate-950 p-3 rounded-lg border border-slate-800">// Current Cart Array State
+[]</pre>
+                <p class="text-[11px] text-slate-400 mt-2 font-sans">
+                    Every cart modification executes methods like <code class="text-indigo-300">.push()</code>, <code class="text-indigo-300">.find()</code>, or <code class="text-indigo-300">.filter()</code> on memory arrays.
+                </p>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-500">
+        <p>Built with vanilla HTML, Tailwind CSS, and JavaScript Arrays. Ready to deploy on GitHub Pages or Vercel.</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- 1. PRODUCT CATALOG DATA (Array of Objects in Ghana Cedis - GH¢) ---
+        const products = [
+            { id: 1, name: "Ankara Print Backpack", price: 280.00, category: "Fashion", image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80", desc: "Durable canvas backpack featuring vibrant traditional Ankara patterns." },
+            { id: 2, name: "Wireless Bluetooth Earbuds", price: 450.00, category: "Electronics", image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=600&q=80", desc: "Crystal clear sound with deep bass and 24-hour battery charging case." },
+            { id: 3, name: "Handmade Beaded Wristwatch", price: 195.50, category: "Accessories", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80", desc: "Unique artisan timepiece blending modern minimalism with local craftsmanship." },
+            { id: 4, name: "Smart Fitness Activity Band", price: 620.00, category: "Electronics", image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?auto=format&fit=crop&w=600&q=80", desc: "Track heart rate, sleep patterns, daily step counts, and smartphone notifications." },
+            { id: 5, name: "Stainless Steel Insulated Flask", price: 150.00, category: "Lifestyle", image: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80", desc: "Keeps your beverages ice cold for 24 hours or steaming hot for 12 hours." },
+            { id: 6, name: "Minimalist Leather Wallet", price: 220.00, category: "Accessories", image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=600&q=80", desc: "Slim RFID-blocking genuine leather wallet with quick card access slots." }
+        ];
+
+        // --- 2. CART STATE ARRAY ---
+        let cart = [];
+        let activeCategory = "All";
+
+        // --- 3. DOM ELEMENTS ---
+        const productGrid = document.getElementById("productGrid");
+        const categoryContainer = document.getElementById("categoryContainer");
+        const cartItemsList = document.getElementById("cartItemsList");
+        const cartSummary = document.getElementById("cartSummary");
+        const cartCountBadge = document.getElementById("cartCountBadge");
+        const searchInput = document.getElementById("searchInput");
+        const clearCartBtn = document.getElementById("clearCartBtn");
+        const cartSubtotal = document.getElementById("cartSubtotal");
+        const cartTotal = document.getElementById("cartTotal");
+        const arrayInspectorCode = document.getElementById("arrayInspectorCode");
+        const cartArrayLength = document.getElementById("cartArrayLength");
+        const productCount = document.getElementById("productCount");
+
+        // --- 4. INITIALIZE APP ---
+        function initApp() {
+            renderCategories();
+            renderProducts(products);
+            updateCartUI();
+        }
+
+        // --- 5. RENDER CATEGORIES USING .map() & Set ---
+        function renderCategories() {
+            // Extract unique categories using Set and Array spread
+            const categories = ["All", ...new Set(products.map(p => p.category))];
+            
+            categoryContainer.innerHTML = categories.map(cat => `
+                <button onclick="filterByCategory('${cat}')" 
+                    class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition ${activeCategory === cat ? 'bg-indigo-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        // --- 6. FILTER PRODUCTS USING .filter() ---
+        function filterByCategory(category) {
+            activeCategory = category;
+            renderCategories();
+            applyFilters();
+        }
+
+        searchInput.addEventListener("input", applyFilters);
+
+        function applyFilters() {
+            const query = searchInput.value.toLowerCase();
+            
+            // Array .filter() method combining category and search text
+            const filtered = products.filter(p => {
+                const matchesCategory = activeCategory === "All" || p.category === activeCategory;
+                const matchesSearch = p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+
+            renderProducts(filtered);
+        }
+
+        // --- 7. RENDER PRODUCTS USING .map() ---
+        function renderProducts(items) {
+            productCount.textContent = `Showing ${items.length} item${items.length === 1 ? '' : 's'}`;
+            
+            if (items.length === 0) {
+                productGrid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
+                        <i class="fa-solid fa-box-open text-3xl mb-2 text-slate-300"></i>
+                        <p class="text-sm">No products found matching your search criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            productGrid.innerHTML = items.map(product => `
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="h-48 overflow-hidden bg-slate-100 relative">
+                            <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                            <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-slate-800 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">
+                                ${product.category}
+                            </span>
+                        </div>
+                        <div class="p-5">
+                            <h4 class="font-bold text-slate-800 text-base mb-1">${product.name}</h4>
+                            <p class="text-xs text-slate-500 line-clamp-2 mb-3">${product.desc}</p>
+                        </div>
+                    </div>
+                    <div class="p-5 pt-0 flex items-center justify-between mt-auto">
+                        <span class="font-bold text-indigo-600 text-base">GH¢ ${product.price.toFixed(2)}</span>
+                        <button onclick="addToCart(${product.id})" class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- 8. CART ARRAY OPERATIONS (.find(), .push(), .filter(), .map()) ---
+        function addToCart(productId) {
+            // Find product in catalog array
+            const product = products.find(p => p.id === productId);
+            
+            // Check if already in cart array
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                // Immutable push / object creation
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCartUI();
+        }
+
+        function updateQuantity(productId, change) {
+            const item = cart.find(i => i.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    // Remove item using .filter() if quantity drops to zero
+                    cart = cart.filter(i => i.id !== productId);
+                }
+            }
+            updateCartUI();
+        }
+
+        clearCartBtn.addEventListener("click", () => {
+            cart = [];
+            updateCartUI();
+        });
+
+        // --- 9. CALCULATIONS & UI RENDERING VIA .reduce() ---
+        function updateCartUI() {
+            // Calculate total item count via .reduce()
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCountBadge.textContent = totalCount;
+
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = `
+                    <div class="py-8 text-center text-slate-400 text-sm">
+                        <i class="fa-solid fa-cart-arrow-down text-3xl mb-2 block text-slate-300"></i>
+                        Your cart is empty. Add items to test array states!
+                    </div>
+                `;
+                cartSummary.classList.add("hidden");
+                clearCartBtn.classList.add("hidden");
+            } else {
+                cartSummary.classList.remove("hidden");
+                clearCartBtn.classList.remove("hidden");
+
+                // Render cart items via .map()
+                cartItemsList.innerHTML = cart.map(item => `
+                    py-3 flex items-center justify-between gap-3">
+                        <div class="flex-1 min-w-0">
+                            <h5 class="font-bold text-slate-800 text-xs truncate">${item.name}</h5>
+                            <p class="text-indigo-600 text-xs font-semibold">GH¢ ${(item.price * item.quantity).toFixed(2)}</p>
+                        </div>
+                        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-1">
+                            <button onclick="updateQuantity(${item.id}, -1)" class="w-5 h-5 flex items-center justify-center text-slate-500 hover:bg-white rounded transition text-xs font-bold">-</button>
+                            <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, 1)" class="w-5 h-5 flex items-center justify-center text-slate-500 hover:bg-white rounded transition text-xs font-bold">+</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Calculate subtotal using .reduce()
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                cartSubtotal.textContent = `GH¢ ${subtotal.toFixed(2)}`;
+                cartTotal.textContent = `GH¢ ${(subtotal + 25).toFixed(2)}`;
+            }
+
+            // Update Live Array Inspector JSON preview
+            cartArrayLength.textContent = `cart.length = ${cart.length}`;
+            arrayInspectorCode.textContent = JSON.stringify(cart, null, 2);
+        }
+
+        function checkout() {
+            alert("Checkout successful! Thank you for testing the array-powered E-Commerce app in Ghana Cedis (GH¢).");
+            cart = [];
+            updateCartUI();
+        }
+
+        // Run app on load
+        window.onload = initApp;
+    </script>
+</body>
+</html>
